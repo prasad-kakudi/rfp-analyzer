@@ -1,0 +1,398 @@
+<!-- templates/analysis.html -->
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - RFP Analyzer{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold text-gray-900">{{ analysis.title }}</h2>
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                Analysis Complete
+            </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+                <span class="text-gray-500">Organization:</span>
+                <span class="font-medium ml-2">{{ analysis.organization }}</span>
+            </div>
+            <div>
+                <span class="text-gray-500">Funding:</span>
+                <span class="font-medium ml-2">{{ analysis.funding_amount }}</span>
+            </div>
+            <div>
+                <span class="text-gray-500">File:</span>
+                <span class="font-medium ml-2">{{ filename }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 px-6">
+                <button onclick="showTab('requirements')" 
+                        class="tab-btn py-4 px-1 border-b-2 font-medium text-sm active">
+                    Requirements Analysis
+                </button>
+                <button onclick="showTab('application')" 
+                        class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                    Application Structure
+                </button>
+                <button onclick="showTab('prompt')" 
+                        class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                    AI Prompt Generator
+                </button>
+            </nav>
+        </div>
+
+        <!-- Requirements Tab -->
+        <div id="requirements-tab" class="tab-content p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Eligibility Requirements -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Eligibility Requirements
+                    </h3>
+                    <ul class="space-y-2">
+                        {% for item in analysis.requirements.eligibility %}
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span class="text-sm text-gray-700">{{ item }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Financial Requirements -->
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-green-900 mb-3 flex items-center">
+                        <i class="fas fa-dollar-sign mr-2"></i>
+                        Financial Requirements
+                    </h3>
+                    <ul class="space-y-2">
+                        {% for item in analysis.requirements.financial %}
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span class="text-sm text-gray-700">{{ item }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Timeline -->
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-purple-900 mb-3 flex items-center">
+                        <i class="fas fa-calendar mr-2"></i>
+                        Timeline & Deadlines
+                    </h3>
+                    <ul class="space-y-2">
+                        {% for item in analysis.requirements.timeline %}
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span class="text-sm text-gray-700">{{ item }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Geographic Requirements -->
+                <div class="bg-orange-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-orange-900 mb-3 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        Geographic Focus
+                    </h3>
+                    <ul class="space-y-2">
+                        {% for item in analysis.requirements.geographic %}
+                        <li class="flex items-start">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span class="text-sm text-gray-700">{{ item }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Focus Areas -->
+            <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <i class="fas fa-bullseye mr-2"></i>
+                    Focus Areas & Priorities
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for item in analysis.requirements.focus_areas %}
+                    <div class="bg-white rounded p-3 border-l-4 border-gray-400">
+                        <span class="text-sm text-gray-700">{{ item }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Required Documents -->
+            <div class="mt-6 bg-red-50 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-red-900 mb-3 flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i>
+                    Required Documents
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {% for item in analysis.requirements.documents %}
+                    <div class="flex items-center">
+                        <i class="fas fa-file text-red-500 mr-2"></i>
+                        <span class="text-sm text-gray-700">{{ item }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Structure Tab -->
+        <div id="application-tab" class="tab-content p-6 hidden">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Application Sections</h3>
+            <div class="space-y-4">
+                {% for section in analysis.application_sections %}
+                <div class="border rounded-lg p-4 hover:bg-gray-50">
+                    <h4 class="font-medium text-gray-900 mb-2">{{ section.title }}</h4>
+                    <p class="text-sm text-gray-600">{{ section.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if analysis.success_tips %}
+            <div class="mt-6 bg-yellow-50 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-yellow-900 mb-3 flex items-center">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    Success Tips
+                </h3>
+                <ul class="space-y-2">
+                    {% for tip in analysis.success_tips %}
+                    <li class="flex items-start">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        <span class="text-sm text-gray-700">{{ tip }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- AI Prompt Tab -->
+        <div id="prompt-tab" class="tab-content p-6 hidden">
+            <div class="bg-blue-50 rounded-lg p-6">
+                <h3 class="text-xl font-semibold text-blue-900 mb-4 flex items-center">
+                    <i class="fas fa-robot mr-2"></i>
+                    AI Response Generation Prompt
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">System Prompt:</h4>
+                        <div class="bg-white p-4 rounded border-l-4 border-blue-500 font-mono text-sm">
+                            <p class="mb-2">You are an expert grant writer specializing in {{ analysis.organization }} funding opportunities. Generate a compelling proposal response based on the provided organization information and RFP requirements.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">User Input Template:</h4>
+                        <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+                            <textarea class="w-full h-64 p-3 border rounded font-mono text-xs" readonly>**Organization Details:**
+Organization Name: [Your organization name]
+Mission: [Your organization's mission statement]
+Target Population: [Who you serve - must align with RFP requirements]
+Geographic Area: [Specific service area - must match RFP requirements]
+
+**Project Information:**
+Project Title: [Compelling 30-character title]
+Project Description: [Brief overview of proposed program]
+Funding Request: [Amount between specified range: {{ analysis.funding_amount }}]
+Project Duration: [Timeline alignment with RFP requirements]
+
+**Alignment with RFP:**
+{% for area in analysis.requirements.focus_areas[:3] %}
+Focus Area: {{ area }}
+{% endfor %}
+
+**Evidence & Impact:**
+Research/Data: [Supporting evidence for your approach]
+Expected Outcomes: [Specific, measurable results]
+Target Numbers: [How many people served, outcomes achieved]
+
+**Organizational Capacity:**
+Staff Qualifications: [Relevant experience and expertise]
+Previous Success: [Track record and achievements]
+Community Knowledge: [Understanding of local needs]
+
+**Evaluation & Partnership:**
+Success Metrics: [How you'll measure impact]
+Evaluation Methods: [Data collection and analysis plans]
+Partnership Ideas: [Specific ways to collaborate with {{ analysis.organization }}]
+
+**Budget & Sustainability:**
+Budget Overview: [High-level budget breakdown]
+Matching Funds: [Other funding sources]
+Sustainability Plan: [Long-term viability]</textarea>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-2">Response Requirements:</h4>
+                        <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+                            <ul class="text-sm space-y-1">
+                                <li>• Address all eligibility requirements specifically</li>
+                                <li>• Align clearly with identified focus areas</li>
+                                <li>• Include specific, measurable outcomes</li>
+                                <li>• Demonstrate organizational capacity and community knowledge</li>
+                                <li>• Propose concrete partnership opportunities</li>
+                                <li>• Show understanding of local needs and ecosystem</li>
+                                <li>• Use compelling, clear language that stands out</li>
+                                <li>• Stay within any specified character/word limits</li>
+                                {% if analysis.success_tips %}
+                                <li>• Follow success tips: 
+                                    {% for tip in analysis.success_tips[:2] %}
+                                    {{ tip[:50] }}...;
+                                    {% endfor %}
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button onclick="copyPrompt()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center">
+                            <i class="fas fa-copy mr-2"></i>
+                            Copy Prompt
+                        </button>
+                        <button onclick="downloadPrompt()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center">
+                            <i class="fas fa-download mr-2"></i>
+                            Download as TXT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+            <a href="{{ url_for('index') }}" 
+               class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 text-center">
+                <i class="fas fa-upload mr-2"></i>
+                Analyze Another RFP
+            </a>
+            <button onclick="exportAnalysis()" 
+                    class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                <i class="fas fa-file-export mr-2"></i>
+                Export Analysis
+            </button>
+            <button onclick="window.print()" 
+                    class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                <i class="fas fa-print mr-2"></i>
+                Print Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'border-blue-500', 'text-blue-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active', 'border-blue-500', 'text-blue-600');
+    event.target.classList.remove('border-transparent', 'text-gray-500');
+}
+
+function copyPrompt() {
+    const promptText = document.querySelector('#prompt-tab textarea').value;
+    navigator.clipboard.writeText(promptText).then(() => {
+        showNotification('Prompt copied to clipboard!', 'success');
+    });
+}
+
+function downloadPrompt() {
+    const promptText = document.querySelector('#prompt-tab textarea').value;
+    const blob = new Blob([promptText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rfp_response_prompt.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showNotification('Prompt downloaded!', 'success');
+}
+
+function exportAnalysis() {
+    const analysisData = {
+        title: '{{ analysis.title }}',
+        organization: '{{ analysis.organization }}',
+        funding_amount: '{{ analysis.funding_amount }}',
+        requirements: {{ analysis.requirements | tojson }},
+        application_sections: {{ analysis.application_sections | tojson }},
+        success_tips: {{ analysis.success_tips | tojson }}
+    };
+    
+    const blob = new Blob([JSON.stringify(analysisData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rfp_analysis.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showNotification('Analysis exported!', 'success');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
+}
+
+// Initialize with first tab active
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.tab-btn').classList.add('border-blue-500', 'text-blue-600');
+    document.querySelector('.tab-btn').classList.remove('border-transparent', 'text-gray-500');
+});
+</script>
+
+<style>
+.tab-btn {
+    @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+}
+
+.tab-btn.active {
+    @apply border-blue-500 text-blue-600;
+}
+
+@media print {
+    nav, .bg-white.shadow button {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

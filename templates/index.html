@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Upload RFP - RFP Analyzer{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">RFP Document Analyzer</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+            Upload your RFP document (PDF, DOCX, or TXT) to automatically extract requirements, 
+            generate analysis, and create AI prompts for response generation.
+        </p>
+    </div>
+
+    <div class="max-w-md mx-auto">
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" 
+              class="space-y-6" id="uploadForm">
+            
+            <!-- File Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                 id="dropZone">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                <div class="mb-4">
+                    <label for="file" class="cursor-pointer">
+                        <span class="text-blue-600 hover:text-blue-500 font-medium">
+                            Choose a file with RFP details
+                        </span>
+                        <span class="text-gray-500"> or drag and drop</span>
+                    </label>
+                    <input type="file" name="file" id="file" class="hidden" 
+                           accept=".pdf,.docx,.txt" required>
+                </div>
+                <p class="text-sm text-gray-500">PDF, DOCX, or TXT up to 16MB</p>
+            </div>
+
+            <!-- File Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                 id="dropZone">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                <div class="mb-4">
+                    <label for="about" class="cursor-pointer">
+                        <span class="text-blue-600 hover:text-blue-500 font-medium">
+                            Choose a file about your organization
+                        </span>
+                        <span class="text-gray-500"> or drag and drop (Filename should be About) </span>
+                    </label>
+                    <input type="about" name="about" id="about" class="hidden" 
+                           accept=".pdf,.docx,.txt" required>
+                </div>
+                <p class="text-sm text-gray-500">PDF, DOCX, or TXT up to 16MB</p>
+            </div>
+
+            <!-- Selected File Display -->
+            <div id="fileInfo" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-file text-blue-500 mr-2"></i>
+                        <span id="fileName" class="text-sm text-gray-700"></span>
+                    </div>
+                    <button type="button" id="removeFile" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" 
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 
+                           transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="submitBtn" disabled>
+                <i class="fas fa-search mr-2"></i>
+                Analyze RFP Document
+            </button>
+        </form>
+    </div>
+
+    <!-- Features Section -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center p-6 bg-blue-50 rounded-lg">
+            <i class="fas fa-cogs text-3xl text-blue-600 mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Auto-Extract Requirements</h3>
+            <p class="text-gray-600">Automatically identifies eligibility, financial, timeline, and document requirements.</p>
+        </div>
+        
+        <div class="text-center p-6 bg-green-50 rounded-lg">
+            <i class="fas fa-brain text-3xl text-green-600 mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Generate AI Prompts</h3>
+            <p class="text-gray-600">Creates optimized prompts for LLMs to generate compelling proposal responses.</p>
+        </div>
+        
+        <div class="text-center p-6 bg-purple-50 rounded-lg">
+            <i class="fas fa-chart-line text-3xl text-purple-600 mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Success Analysis</h3>
+            <p class="text-gray-600">Extracts success tips and evaluation criteria from the RFP.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file');
+    const aboutInput = document.getElementById('about');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const removeFile = document.getElementById('removeFile');
+    const submitBtn = document.getElementById('submitBtn');
+    const dropZone = document.getElementById('dropZone');
+
+    fileInput.addEventListener('change', handleFileSelect);
+    removeFile.addEventListener('click', clearFile);
+    
+    // Drag and drop functionality
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('drop', handleDrop);
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            displayFile(file);
+        }
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        dropZone.classList.add('border-blue-400', 'bg-blue-50');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            displayFile(files[0]);
+        }
+    }
+
+    function displayFile(file) {
+        fileName.textContent = file.name;
+        fileInfo.classList.remove('hidden');
+        submitBtn.disabled = false;
+    }
+
+    function clearFile() {
+        fileInput.value = '';
+        fileInfo.classList.add('hidden');
+        submitBtn.disabled = true;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,204 @@
+<!-- templates/prompt_generator.html -->
+{% extends "base.html" %}
+
+{% block title %}Prompt Generator - RFP Analyzer{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">AI Prompt Generator</h2>
+    
+    <form id="promptForm" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Organization Details -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">Organization Details</h3>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                    <input type="text" id="orgName" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mission Statement</label>
+                    <textarea id="mission" rows="3" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Target Population</label>
+                    <input type="text" id="targetPop" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Project Details -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">Project Details</h3>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
+                    <input type="text" id="projectTitle" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Funding Amount Requested</label>
+                    <input type="text" id="fundingAmount" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="e.g., $50,000">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Geographic Area</label>
+                    <input type="text" id="geoArea" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Description -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Project Description</label>
+            <textarea id="projectDesc" rows="4" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" 
+                      placeholder="Describe your proposed program or project"></textarea>
+        </div>
+
+        <!-- Expected Outcomes -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Expected Outcomes & Impact</label>
+            <textarea id="outcomes" rows="3" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" 
+                      placeholder="What measurable outcomes do you expect?"></textarea>
+        </div>
+
+        <!-- Generate Button -->
+        <button type="button" onclick="generatePrompt()" 
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+            <i class="fas fa-magic mr-2"></i>
+            Generate AI Prompt
+        </button>
+    </form>
+
+    <!-- Generated Prompt Display -->
+    <div id="generatedPrompt" class="hidden mt-8 bg-gray-50 rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Generated Prompt</h3>
+            <div class="space-x-2">
+                <button onclick="copyGeneratedPrompt()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+                    <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+                <button onclick="downloadGeneratedPrompt()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                    <i class="fas fa-download mr-1"></i> Download
+                </button>
+            </div>
+        </div>
+        <textarea id="promptOutput" rows="20" class="w-full border rounded-lg px-3 py-2 font-mono text-sm bg-white" readonly></textarea>
+    </div>
+</div>
+
+<script>
+function generatePrompt() {
+    const formData = {
+        orgName: document.getElementById('orgName').value,
+        mission: document.getElementById('mission').value,
+        targetPop: document.getElementById('targetPop').value,
+        projectTitle: document.getElementById('projectTitle').value,
+        fundingAmount: document.getElementById('fundingAmount').value,
+        geoArea: document.getElementById('geoArea').value,
+        projectDesc: document.getElementById('projectDesc').value,
+        outcomes: document.getElementById('outcomes').value
+    };
+
+    const prompt = `You are an expert grant writer with extensive experience in nonprofit funding and proposal development. Based on the organization details provided below, generate a compelling, professional grant proposal response.
+
+ORGANIZATION INFORMATION:
+- Organization: ${formData.orgName || '[Organization Name]'}
+- Mission: ${formData.mission || '[Mission Statement]'}
+- Target Population: ${formData.targetPop || '[Target Population]'}
+- Geographic Area: ${formData.geoArea || '[Service Area]'}
+
+PROJECT DETAILS:
+- Project Title: ${formData.projectTitle || '[Project Title]'}
+- Funding Request: ${formData.fundingAmount || '[Funding Amount]'}
+- Project Description: ${formData.projectDesc || '[Project Description]'}
+- Expected Outcomes: ${formData.outcomes || '[Expected Outcomes]'}
+
+RESPONSE REQUIREMENTS:
+Please generate a comprehensive proposal response that includes:
+
+1. EXECUTIVE SUMMARY (200-300 words)
+   - Compelling overview of the project
+   - Clear statement of need and impact
+   - Alignment with funder priorities
+
+2. PROJECT DESCRIPTION (500-750 words)
+   - Detailed program description
+   - Target population and geographic focus
+   - Evidence-based approach and methodology
+   - Timeline and key milestones
+
+3. ORGANIZATIONAL CAPACITY (300-400 words)
+   - Staff qualifications and expertise
+   - Track record and previous successes
+   - Community knowledge and partnerships
+   - Infrastructure and resources
+
+4. EVALUATION PLAN (200-300 words)
+   - Specific, measurable outcomes
+   - Data collection methods
+   - Success metrics and benchmarks
+   - Continuous improvement approach
+
+5. BUDGET JUSTIFICATION (150-250 words)
+   - High-level budget breakdown
+   - Cost-effectiveness demonstration
+   - Matching funds or in-kind contributions
+   - Sustainability planning
+
+WRITING GUIDELINES:
+- Use clear, compelling language that tells a story
+- Include specific data and evidence where possible
+- Address root causes, not just symptoms
+- Demonstrate innovation and creativity
+- Show clear alignment with funder priorities
+- Use active voice and strong action verbs
+- Ensure logical flow between sections
+- Include concrete examples and success stories
+
+Please make the response professional, persuasive, and tailored to showcase why this organization and project deserve funding.`;
+
+    document.getElementById('promptOutput').value = prompt;
+    document.getElementById('generatedPrompt').classList.remove('hidden');
+}
+
+function copyGeneratedPrompt() {
+    const promptText = document.getElementById('promptOutput').value;
+    navigator.clipboard.writeText(promptText).then(() => {
+        showNotification('Prompt copied to clipboard!', 'success');
+    });
+}
+
+function downloadGeneratedPrompt() {
+    const promptText = document.getElementById('promptOutput').value;
+    const orgName = document.getElementById('orgName').value || 'organization';
+    const filename = `${orgName.toLowerCase().replace(/\s+/g, '_')}_prompt.txt`;
+    
+    const blob = new Blob([promptText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showNotification('Prompt downloaded!', 'success');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
+}
+</script>
+{% endblock %}
